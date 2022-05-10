@@ -1,20 +1,31 @@
 import { buildConfig } from './config';
-import prettyShutdown from './pretty-shutdown';
+import gracefulShutdown from './pretty-shutdown';
 import 'make-promises-safe';
 import { buildApp } from './app';
 import { buildLogger } from './logger';
+import { buildMongoDatabase, NOSQL_DB } from './database/mongo-db';
 
 const config = buildConfig();
 const logger = buildLogger(config.log);
 
+//Nueva rama
+let dbNoSql: NOSQL_DB;
+
 async function main() {
     logger.info(`Starting ${config.projectName}`);
-    const app = await buildApp(logger);
+    const { http, mongo } = config;
 
-    const { http } = config;
+
+    dbNoSql = buildMongoDatabase(mongo);
+
+
+    await dbNoSql.init();
+
+    const app = await buildApp({ logger, dbNoSql });
+
     await app.getServer().listen(http.port, http.host);
-    process.on('SIGTERM', prettyShutdown(app, logger));
-    process.on('SIGINT', prettyShutdown(app, logger));
+    process.on('SIGTERM', gracefulShutdown(app, logger, dbNoSql));
+    process.on('SIGINT', gracefulShutdown(app, logger, dbNoSql));
 }
 
 main().catch(error => {
@@ -22,4 +33,4 @@ main().catch(error => {
         `Error while starting up ${config.projectName}. ${error.message}`
     );
     process.exit(1);
-});
+})

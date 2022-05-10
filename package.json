@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start:dev": "npx ts-node src/main.ts --inspect=0.0.0.0:9229",
-    "start:dev:watch": "nodemon -L src/main.ts --inspect=0.0.0.0:9229 --exec npx ts-node"
+    "start:dev:watch": "nodemon -L src/main.ts --inspect=0.0.0.0:9229 --exec npx ts-node",
+    "start:mongodb": "docker run --rm --detach --name tc-mongodb -p 27017:27017 mongo"
   },
   "keywords": [
     "typescript",
@@ -18,14 +19,17 @@
     "convict": "^6.2.2",
     "dotenv": "^16.0.0",
     "fastify": "^3.27.4",
+    "fastify-cors": "^6.0.3",
     "fastify-swagger": "^5.1.0",
     "fs": "^0.0.1-security",
     "make-promises-safe": "^5.1.0",
+    "mongodb": "^4.4.1",
     "pino": "^7.9.2",
     "pino-pretty": "^7.6.0"
   },
   "devDependencies": {
     "@types/convict": "^6.1.1",
+    "@types/fastify-cors": "^2.1.0",
     "@types/node": "^17.0.23",
     "nodemon": "^2.0.15",
     "prettier": "^2.6.2",
